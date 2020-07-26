@@ -13,6 +13,9 @@ const SearchComponent = props => {
     const [res, setRes] = useState('');
     const [obj, setObj] = useState({});
     const [html, setHtml] = useState('');
+    const [fail, setFail] = useState('');
+    const [img, setImg] = useState('');
+    const failImgUrl = 'https://i.kym-cdn.com/photos/images/facebook/001/005/935/ef1.jpg';
 
     const mapResults = () => {
         let otherObj = {
@@ -26,7 +29,7 @@ const SearchComponent = props => {
             paragraph6: '6',
 
         }
-        if(type == 'people'){
+        if(type === 'people'){
             otherObj.header1 = res.name;
             otherObj.header2 = 'Homeworld: ' + res.homeworld;
             otherObj.paragraph1 = 'Gender: ' + res.gender;
@@ -36,7 +39,7 @@ const SearchComponent = props => {
             otherObj.paragraph5 = 'Films: ' + res.films;
             otherObj.paragraph6 = 'Vehicles: ' + res.vehicles;
         }
-        if(type == 'planets'){
+        if(type === 'planets'){
             otherObj.header1 = res.name;
             otherObj.header2 = 'Climate: ' + res.climate;
             otherObj.paragraph1 = 'Gravity: ' + res.gravity;
@@ -46,7 +49,7 @@ const SearchComponent = props => {
             otherObj.paragraph5 = 'Residents: ' + res.residents;
             otherObj.paragraph6 = 'Orbital Period: ' + res.orbital_period;
         }
-        if(type == 'starships'){
+        if(type === 'starships'){
             otherObj.header1 = res.name;
             otherObj.header2 = 'Model: ' + res.model;
             otherObj.paragraph1 = 'Crew: ' + res.crew;
@@ -56,7 +59,7 @@ const SearchComponent = props => {
             otherObj.paragraph5 = 'Hyperdrive Rating: ' + res.hyperdrive_rating;
             otherObj.paragraph6 = 'Manufacturer: ' + res.manufacturer;
         }
-        if(type == 'species'){
+        if(type === 'species'){
             otherObj.header1 = res.name;
             otherObj.header2 = 'Designation: ' + res.designation;
             otherObj.paragraph1 = 'Classification: ' + res.classification;
@@ -65,12 +68,6 @@ const SearchComponent = props => {
             otherObj.paragraph4 = 'Homeworld: ' + res.homeworld;
             otherObj.paragraph5 = 'Language: ' + res.language;
             otherObj.paragraph6 = 'Films: ' + res.films;
-        }
-        if(type == 'vehicles'){
-
-        }
-        if(type == 'films'){
-
         }
 
         setObj(otherObj);
@@ -97,31 +94,50 @@ const SearchComponent = props => {
     const onClickHandler = e => {
         //first create URL from stateful variables
         setUrl('https://swapi.dev/api/' + type + '/' + num + '/');
-
-        console.log('---------');
         console.log(url);
-        console.log('---------');
 
         //next fetch our results
         const results = axios.get(url).then(response=> {
             console.log('URL: ' + url);
             console.log(response);
             setRes(response.data)
+            setFail(false);
             return response.data;
+        }).catch( response => {
+            setFail(true);
+            console.log('Failed: ' + fail)
+            return 0;
         });
         
         
+        
         //lastly return HTML with our results!
-        setHtml(renderObj(mapResults()));
+        if(!fail){
+            setHtml(renderObj(mapResults()));
+        }
+        
         return results.data;
     }
+    const failHandler = () => {
+        if(fail === true){
+            setImg(<img src={failImgUrl}></img>);
+            setHtml('');
+        }
+        else {
+            setImg('');
+        }
+    }
+
     // useEffect(mapResults,[]);
     useEffect(() => {
         setUrl('https://swapi.dev/api/' + type + '/' + num + '/');
     });
-    // useEffect(() => {
-    //     setHtml(renderObj(mapResults()))
-    // })
+    useEffect(() => {
+        setHtml(renderObj(mapResults()))
+    },[res]);
+    useEffect(() => {
+        failHandler();
+    },[fail]);
 
 
     return (
@@ -133,14 +149,12 @@ const SearchComponent = props => {
                 <select placeholder="planets" onChange={e => setType(e.target.value)} id='type' name="Type">
                     <option value="planets">Planets</option>
                     <option value="starships">Starships</option>
-                    <option value="vehicles">Vehicles</option>
                     <option value="people">People</option>
-                    <option value="films">Films</option>
                     <option value="species">Species</option>
                 </select>
 
                 <label htmlFor='num'>Select Number</label>
-                <input onChange={e => setNum(e.target.value)} min='1' max='50' id="num" type="number" placeholder='1'></input>
+                <input onChange={e => setNum(e.target.value)} min='1' max='100' id="num" type="number" placeholder='1'></input>
 
                 <button onClick = { onClickHandler } className = "button">
                     <a className="buttonLink">Search!</a>
@@ -150,6 +164,7 @@ const SearchComponent = props => {
             </div>
 
             <div className="results">
+                {img}
                 {html}
             </div>
 
