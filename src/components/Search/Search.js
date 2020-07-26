@@ -15,6 +15,8 @@ const SearchComponent = props => {
     const [html, setHtml] = useState('');
     const [fail, setFail] = useState('');
     const [img, setImg] = useState('');
+    const [initialRender, setInitialRender] = useState(true);
+
     const failImgUrl = 'https://i.kym-cdn.com/photos/images/facebook/001/005/935/ef1.jpg';
 
     const mapResults = () => {
@@ -30,8 +32,22 @@ const SearchComponent = props => {
 
         }
         if(type === 'people'){
+
+            // async function abc(){
+            //     const homeworld = await fetch(res.homeworld)
+            //     return homeworld.json;
+            // }
+
+            // const stuff = abc();
+
+            // const homeworld = axios.get(res.homeworld).then(response=> {
+            //     console.log(response);
+            //     return response.data.name;
+            // })
+
             otherObj.header1 = res.name;
             otherObj.header2 = 'Homeworld: ' + res.homeworld;
+            otherObj.header2 = <a href={res.homeworld}>Homeworld</a>;
             otherObj.paragraph1 = 'Gender: ' + res.gender;
             otherObj.paragraph2 = 'Height: ' + res.height;
             otherObj.paragraph3 = 'Weight: ' + res.mass;
@@ -94,6 +110,7 @@ const SearchComponent = props => {
     const onClickHandler = e => {
         //first create URL from stateful variables
         setUrl('https://swapi.dev/api/' + type + '/' + num + '/');
+        setInitialRender(false);
         console.log(url);
 
         //next fetch our results
@@ -138,7 +155,9 @@ const SearchComponent = props => {
     useEffect(() => {
         failHandler();
     },[fail]);
-
+    useEffect(() => {
+        setHtml('');
+    },[])
 
     return (
         <div className='SearchComponent'>
