@@ -11,14 +11,12 @@ const SearchComponent = props => {
     const [num, setNum] = useState(1);
     const [url, setUrl] = useState('https://swapi.dev/api/planets/1/');
     const [res, setRes] = useState('');
-    const [obj, setObj] = useState({});
     const [html, setHtml] = useState('');
     const [fail, setFail] = useState('');
     const [img, setImg] = useState('');
-    const [initialRender, setInitialRender] = useState(true);
 
     const failImgUrl = 'https://i.kym-cdn.com/photos/images/facebook/001/005/935/ef1.jpg';
-
+    
     const mapResults = () => {
         let otherObj = {
             header1: 'h1',
@@ -86,7 +84,6 @@ const SearchComponent = props => {
             otherObj.paragraph6 = 'Films: ' + res.films;
         }
 
-        setObj(otherObj);
         return (
             otherObj
         );
@@ -110,7 +107,6 @@ const SearchComponent = props => {
     const onClickHandler = e => {
         //first create URL from stateful variables
         setUrl('https://swapi.dev/api/' + type + '/' + num + '/');
-        setInitialRender(false);
         console.log(url);
 
         //next fetch our results
@@ -137,7 +133,7 @@ const SearchComponent = props => {
     }
     const failHandler = () => {
         if(fail === true){
-            setImg(<img src={failImgUrl}></img>);
+            setImg(<img src={failImgUrl} alt="Not the Droids"></img>);
             setHtml('');
         }
         else {
@@ -145,10 +141,9 @@ const SearchComponent = props => {
         }
     }
 
-    // useEffect(mapResults,[]);
     useEffect(() => {
         setUrl('https://swapi.dev/api/' + type + '/' + num + '/');
-    });
+    }, [type, num]);
     useEffect(() => {
         setHtml(renderObj(mapResults()))
     },[res]);
@@ -173,12 +168,11 @@ const SearchComponent = props => {
                 </select>
 
                 <label htmlFor='num'>Select Number</label>
-                <input onChange={e => setNum(e.target.value)} min='1' max='100' id="num" type="number" placeholder='1'></input>
+                <input onChange={e => setNum(e.target.value)} value={num} min='1' max='100' id="num" type="number" placeholder='1'></input>
 
                 <button onClick = { onClickHandler } className = "button">
-                    <a className="buttonLink">Search!</a>
+                    <p className="buttonLink">Search!</p>
                     
-                
                 </button>
             </div>
 
